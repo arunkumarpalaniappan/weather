@@ -1,0 +1,13 @@
+language: node_js
+node_js:
+  - "node"
+before_install:
+  - npm i -g npm
+dependencies:
+  override:
+    - yarn install
+script:
+  - yarn run build
+branches:
+  only:
+    - master
