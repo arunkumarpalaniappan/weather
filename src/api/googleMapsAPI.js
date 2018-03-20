@@ -2,7 +2,7 @@ import 'whatwg-fetch'
 
 class googleMapsApi {
     static getGooglePlaces(locString) {
-        return fetch('https://maps.googleapis.com/maps/api/place/autocomplete/json?input=' + locString + '&types=geocode&key=AIzaSyAyesbQMyKVVbBgKVi2g6VX7mop2z96jBo', {
+        return fetch('https://maps.googleapis.com/maps/api/place/autocomplete/json?input=' + locString + '&types=geocode&key=AIzaSyB-4Q__JV3vhlTSAaITDDQaUWep59nYu40', {
              method: 'GET',
              type: 'cors',
              headers: {
