@@ -1,9 +1,12 @@
 import React from 'react';
-import { Input } from 'semantic-ui-react'
+import {Input} from 'semantic-ui-react'
 import {connect} from 'react-redux'
 import * as mapActions from '../actions/mapsAction'
+//import _ from 'lodash'
 import {bindActionCreators} from 'redux'
 import '../css/App.css';
+
+//const API_KEY = 'AIzaSyAyesbQMyKVVbBgKVi2g6VX7mop2z96jBo';
 
 class App extends React.Component {
   constructor(props) {
@@ -16,7 +19,8 @@ class App extends React.Component {
     showRecommendations(event) {
         let location = event.target.value;
         if(location.length) {
-            this.setState({isLoading:true})
+            this.setState({isLoading: true});
+            //to-do: add debounce
             this.props.actions.loadGooglePlaces(location).then(res => {
                 console.log(res)
             })
