@@ -7,6 +7,7 @@ React Application to view current weather info and forecast based on location.
 Based on Google Places, Google Geocode and open Weather Map API.
 
 #### Application Stack/Tech
+- Heroku
 - React
 - Redux
 - Lodash
