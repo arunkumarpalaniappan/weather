@@ -1,7 +1,7 @@
 import * as types from '../actions/actionTypes'
 import initialState from './initialState'
 
-export default function getGoogleMapsReducer(state = initialState.locationData, action) {
+export default function getGooglePlacesReducer(state = initialState, action) {
     switch(action.type) {
         case types.GET_LOCATION_DATA_SUCCESS:
             return action.locationData;
@@ -9,3 +9,5 @@ export default function getGoogleMapsReducer(state = initialState.locationData, 
             return state;
     }
 }
+
+

@@ -1,8 +1,10 @@
 import {combineReducers} from 'redux'
-import locationData from './googleMapsReducer'
+import locationData from './googlePlacesReducer'
+import geoCodeData from './googleGeoCodeReducer'
 
 const rootReducer = combineReducers({
-    locationData
+    locationData,
+    geoCodeData
 });
 
 export default rootReducer
