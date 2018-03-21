@@ -2,7 +2,24 @@
 
 URL: [weather.arunkumarpalaniappan.me](http://weather.arunkumarpalaniappan.me)
 
-Weather info based on location.
+React Application to weather info based on location.
+
+Based on Google Places, Google Geocode and open Weather Map API.
+
+####Application Stack/Tech
+- React
+- Redux
+- Lodash
+- Semantic UI for React
+- Blue Bird
+
+####External API(s)
+- Google Places
+- Google Geocode
+- openweathermap.org
+
+####License
+MIT
 
 
 
