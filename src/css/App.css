@@ -1,3 +1,11 @@
 .weather-div {
   padding: 25px
 }
+
+.ui.input {
+    width: 100%;
+}
+
+.ui.search .prompt {
+    border-radius: 0;
+}

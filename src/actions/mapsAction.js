@@ -12,5 +12,5 @@ export function loadGooglePlaces(location) {
 }
 
 export function getGooglePlacesSuccess(locationData) {
-    return {type: types.GET_LOCATION_DATA, locationData}
+    return {type: types.GET_LOCATION_DATA_SUCCESS, locationData}
 }

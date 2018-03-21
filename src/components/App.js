@@ -1,44 +1,53 @@
 import React from 'react';
-import {Input} from 'semantic-ui-react'
+import {Search} from 'semantic-ui-react'
 import {connect} from 'react-redux'
 import * as mapActions from '../actions/mapsAction'
-//import _ from 'lodash'
+import _ from 'lodash'
 import {bindActionCreators} from 'redux'
 import '../css/App.css';
 
 //const API_KEY = 'AIzaSyAyesbQMyKVVbBgKVi2g6VX7mop2z96jBo';
 
 class App extends React.Component {
+    handleResultSelect = (e, {result}) => this.setState({value: result});
+    handleSearchChange = (e, {value}) => {
+        if (value.length) {
+            this.setState({isLoading: true});
+            this.props.actions.loadGooglePlaces(value);
+        }
+    };
+
   constructor(props) {
       super(props);
       this.state = {
-          isLoading: false
+          isLoading: false,
+          results: [],
+          value: {}
       };
-      this.showRecommendations = this.showRecommendations.bind(this);
   }
-    showRecommendations(event) {
-        let location = event.target.value;
-        if(location.length) {
-            this.setState({isLoading: true});
-            //to-do: add debounce
-            this.props.actions.loadGooglePlaces(location).then(res => {
-                console.log(res)
-            })
-        } else {
-            this.setState({isLoading:false})
-        }
+
+    componentWillReceiveProps(nextProps) {
+        let results = nextProps.locationData.map((data, idx) => ({
+            title: data.structured_formatting.main_text,
+            place_id: data.place_id,
+            description: data.structured_formatting.secondary_text,
+            ke: idx
+        }));
+        this.setState({isLoading: false, results})
     }
+
   render() {
     return (
       <div className="weather-div">
-          <Input
+          <Search
               fluid
               loading={this.state.isLoading}
-              icon='location arrow'
-              iconPosition='left'
-              placeholder='Enter your location'
-              onChange={this.showRecommendations}
-              size='medium' />
+              onResultSelect={this.handleResultSelect}
+              onSearchChange={_.debounce(this.handleSearchChange, 1000, {leading: true})}
+              results={this.state.results}
+              value={this.state.valuevalue}
+              placeholder={"Enter your location"}
+          />
       </div>
     );
   }
