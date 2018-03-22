@@ -2,6 +2,7 @@ import React from 'react';
 import {Search} from 'semantic-ui-react'
 import {connect} from 'react-redux'
 import * as mapActions from '../actions/mapsAction'
+import * as openWeatherActions from '../actions/weatherActions'
 import _ from 'lodash'
 import {bindActionCreators} from 'redux'
 import '../css/App.css';
@@ -38,6 +39,12 @@ class App extends React.Component {
             key: idx,
             location: data.description
         }));
+        if (nextProps.geoCodeData.lat) {
+            if (nextProps.geoCodeData.lat !== this.props.geoCodeData.lat && nextProps.geoCodeData.lng !== this.props.geoCodeData.lng) {
+                this.props.actions.getWeather(nextProps.geoCodeData);
+                this.props.actions.getForecast(nextProps.geoCodeData);
+            }
+        }
         this.setState({isLoading: false, results})
     }
   render() {
@@ -57,16 +64,18 @@ class App extends React.Component {
   }
 }
 
-function mapStateToProps(state, ownProps) {
+function mapStateToProps(state) {
     return {
         locationData: state.locationData,
-        geoCodeData: state.geoCodeData
+        geoCodeData: state.geoCodeData,
+        weatherData: state.weatherData,
+        forecastData: state.forecastData
     };
 }
 
 function mapDispatchToProps(dispatch) {
     return {
-        actions: bindActionCreators(mapActions, dispatch)
+        actions: bindActionCreators(Object.assign({}, mapActions, openWeatherActions), dispatch)
     };
 }
 

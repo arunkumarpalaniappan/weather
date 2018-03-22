@@ -1,5 +1,6 @@
 export default {
     locationData: [],
+    geoCodeData: [],
     weatherData: [],
-    geoCodeData: []
+    forecastData: []
 }
