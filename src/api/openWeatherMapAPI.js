@@ -1,6 +1,6 @@
 class openWeatherMap {
     static getWeather(location) {
-        return fetch(`http://api.openweathermap.org/data/2.5/weather?lat=${location.lat}&lon=${location.lng}&APPID=df0e6a35ea24a42b71dd2a0ee562ced3`)
+        return fetch(`http://api.openweathermap.org/data/2.5/weather?lat=${location.lat}&lon=${location.lng}&APPID=df0e6a35ea24a42b71dd2a0ee562ced3&units=metric`)
             .then(function (response) {
                 return response.json()
             }).then(function (json) {
@@ -12,7 +12,7 @@ class openWeatherMap {
     }
 
     static getForecast(location) {
-        return fetch(`http://api.openweathermap.org/data/2.5/forecast?lat=${location.lat}&lon=${location.lng}&APPID=df0e6a35ea24a42b71dd2a0ee562ced3`)
+        return fetch(`http://api.openweathermap.org/data/2.5/forecast?lat=${location.lat}&lon=${location.lng}&APPID=df0e6a35ea24a42b71dd2a0ee562ced3&units=metric`)
             .then(function (response) {
                 return response.json()
             }).then(function (json) {
