@@ -23,7 +23,8 @@ Based on Google Places, Google Geocode and open Weather Map API.
 #### License
 MIT
 
-
+#### Screen Shot
+![Weather](/screenshots/home.png?raw=true "Home")
 
 
 
