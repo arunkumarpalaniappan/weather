@@ -13,6 +13,7 @@ Based on Google Places, Google Geocode and open Weather Map API.
 - Lodash
 - Semantic UI for React
 - Blue Bird
+- Chart.js for React
 
 #### External API(s)
 - Google Places

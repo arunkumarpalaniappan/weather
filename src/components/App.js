@@ -1,5 +1,5 @@
 import React from 'react';
-import {Card, Grid, Search} from 'semantic-ui-react'
+import {Card, Feed, Grid, Search} from 'semantic-ui-react'
 import {connect} from 'react-redux'
 import * as mapActions from '../actions/mapsAction'
 import * as openWeatherActions from '../actions/weatherActions'
@@ -26,7 +26,7 @@ class App extends React.Component {
                     data: []
                 },
                 {
-                    label: "Humidity",
+                    label: "Humidity in %",
                     fillColor: "rgba(220,220,220,0.2)",
                     strokeColor: "rgba(220,220,220,1)",
                     pointColor: "rgba(220,220,220,1)",
@@ -36,7 +36,7 @@ class App extends React.Component {
                     data: []
                 },
                 {
-                    label: "Wind in SI",
+                    label: "Wind in hpa",
                     fillColor: "rgba(220,220,220,0.2)",
                     strokeColor: "rgba(220,220,220,1)",
                     pointColor: "rgba(220,220,220,1)",
@@ -48,15 +48,36 @@ class App extends React.Component {
             ]
         };
         if (forecastData.list) {
-            for (var idx = 0; idx < 9; idx++) {
-                var tempData = forecastData.list[idx];
-                chartData.labels.push(tempData["dt_txt"]);
+            let date = new Date();
+            for (let idx = 0; idx < 9; idx++) {
+                let tempData = forecastData.list[idx];
+                let tempDataLabel = tempData["dt_txt"].replace(date.getFullYear() + '-', '').replace('00:00', '00').split(' ');
+                chartData.labels.push(tempDataLabel[1] + ' ' + tempDataLabel[0]);
                 chartData.datasets[0].data.push(tempData["main"]["temp"]);
                 chartData.datasets[1].data.push(tempData["main"]["humidity"]);
                 chartData.datasets[2].data.push(tempData["wind"]["speed"])
             }
-            this.setState({chartData})
+            let feedContents = [];
+            for (let idx = 10; idx < forecastData.list.length; idx++) {
+                let tempData = forecastData.list[idx];
+                feedContents.push(<Feed.Event>
+                    <Feed.Label>
+                        {tempData["main"]["temp"]}
+                    </Feed.Label>
+                    <Feed.Content>
+                        <Feed.Meta>
+                            {tempData["main"]["humidity"]}
+                        </Feed.Meta>
+                    </Feed.Content>
+                </Feed.Event>)
+            }
+            this.setState({chartData, feedContents})
         }
+    };
+    convertDegreestoDirections = (deg) => {
+        let degConv = ((deg / 22.5) + 0.5);
+        const arr = ["North", "North-North East", "North East", "East-North East", "East", "East-South East", "South East", "South-South East", "South", "South-South West", "South West", "West-South West", "West", "West-North West", "North West", "North-North West"];
+        return arr[Math.floor(degConv) % 16]
     };
 
     handleResultSelect = (e, {result}) => {
@@ -68,11 +89,6 @@ class App extends React.Component {
             this.setState({isLoading: true});
             this.props.actions.loadGooglePlaces(value);
         }
-    };
-    convertDegreestoDirections = (deg) => {
-        let degConv = ((deg / 22.5) + 0.5);
-        const arr = ["N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE", "S", "SSW", "SW", "WSW", "W", "WNW", "NW", "NNW"];
-        return arr[Math.floor(degConv) % 16]
     };
 
     constructor(props) {
@@ -97,8 +113,17 @@ class App extends React.Component {
                 datasetStroke: true,
                 datasetStrokeWidth: 2,
                 datasetFill: true,
-                offsetGridLines: false
-            }
+                offsetGridLines: false,
+                responsive: true,
+                maintainAspectRatio: false,
+                legend: {
+                    display: true,
+                    labels: {
+                        fontColor: "#000080",
+                    }
+                }
+            },
+            feedContents: []
         };
     }
 
@@ -122,6 +147,7 @@ class App extends React.Component {
         }
         this.setState({isLoading: false, results})
     }
+
   render() {
     return (
       <div className="weather-div">
@@ -140,28 +166,45 @@ class App extends React.Component {
                       <Card>
                           <Card.Content>
                               <Card.Header>
+                                  <img
+                                      src={`http://openweathermap.org/img/w/${this.props.weatherData.weather[0].icon}.png`}
+                                      alt={''}/> &nbsp;
                                   {this.props.weatherData.main.temp} &#176; C &nbsp;&&nbsp; {this.props.weatherData.weather[0].main}
                               </Card.Header>
                               <Card.Meta>
                                   {this.state.value.location}
                               </Card.Meta>
                               <Card.Description>
-                                  Humidity: <strong>{this.props.weatherData.main.humidity}</strong><br/>
-                                  Pressure: <strong>{this.props.weatherData.main.pressure}</strong> SI<br/>
+                                  Humidity: <strong>{this.props.weatherData.main.humidity + "%"}</strong><br/>
+                                  Pressure: <strong>{this.props.weatherData.main.pressure}</strong> hpa<br/>
                                   Wind
-                                  Speed: <strong>{this.convertDegreestoDirections(this.props.weatherData.wind.deg) + ' ' + this.props.weatherData.wind.speed}</strong> kph<br/>
+                                  Speed: <strong>{this.convertDegreestoDirections(this.props.weatherData.wind.deg) + ' (' + this.props.weatherData.wind.deg + ') ' + this.props.weatherData.wind.speed}</strong> m/s<br/>
                                   Minimum
                                   Temperature: <strong>{this.props.weatherData.main.temp_min} &#176; C</strong><br/>
                                   Maximum
                                   Temperature: <strong>{this.props.weatherData.main.temp_max} &#176; C</strong><br/>
+                                  Sun
+                                  Rise: <strong>{(new Date(this.props.weatherData.sys.sunrise * 1000)).toString()}</strong><br/>
+                                  Sun
+                                  Set: <strong>{(new Date(this.props.weatherData.sys.sunset * 1000)).toString()}</strong><br/>
                               </Card.Description>
                           </Card.Content>
                       </Card>
                   </Grid.Column>
                   <Grid.Column width={12}>
                       {(this.state.chartData.datasets) ? (
-                          <LineChart data={this.state.chartData} options={this.state.chartOptions} width="800"
-                                     height="300"/>) : null}
+                          <div>
+                              <div>
+                                  <LineChart data={this.state.chartData} options={this.state.chartOptions} width="800"
+                                             height="275"/><br/>
+                              </div>
+                              {/*<div>*/}
+                              {/*<Feed>*/}
+                              {/*{this.state.feedContents}*/}
+                              {/*</Feed>*/}
+                              {/*</div>*/}
+                          </div>
+                      ) : null}
                   </Grid.Column>
               </Grid>) : null}
       </div>
