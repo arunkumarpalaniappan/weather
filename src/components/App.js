@@ -1,5 +1,5 @@
 import React from 'react';
-import {Card, Feed, Grid, Search} from 'semantic-ui-react'
+import {Card, Grid, Search, Table} from 'semantic-ui-react'
 import {connect} from 'react-redux'
 import * as mapActions from '../actions/mapsAction'
 import * as openWeatherActions from '../actions/weatherActions'
@@ -58,18 +58,34 @@ class App extends React.Component {
                 chartData.datasets[2].data.push(tempData["wind"]["speed"])
             }
             let feedContents = [];
-            for (let idx = 10; idx < forecastData.list.length; idx++) {
-                let tempData = forecastData.list[idx];
-                feedContents.push(<Feed.Event>
-                    <Feed.Label>
-                        {tempData["main"]["temp"]}
-                    </Feed.Label>
-                    <Feed.Content>
-                        <Feed.Meta>
-                            {tempData["main"]["humidity"]}
-                        </Feed.Meta>
-                    </Feed.Content>
-                </Feed.Event>)
+            let processData = _.map(forecastData.list, (data) => {
+                data['dt_date'] = data.dt_txt.split(' ')[0];
+                return data
+            });
+            processData = _.groupBy(processData, (data) => data.dt_date);
+            for (let key in processData) {
+                feedContents.push(<Table.Header key={key}>
+                    <Table.Row colSpan={5}>
+                        <Table.HeaderCell colSpan={5}>{(new Date(key)).toDateString()}</Table.HeaderCell>
+                    </Table.Row>
+                </Table.Header>);
+                for (let idx = 0; idx < processData[key].length; idx++) {
+                    feedContents.push(<Table.Body key={key + '_' + idx}><Table.Row>
+                        <Table.Cell rowSpan='3'>
+                            {processData[key][idx]['dt_txt'].split(' ')[1].replace(':00:00', ':00')}<br/>
+                            <img
+                                src={`http://openweathermap.org/img/w/${processData[key][idx]['weather'][0].icon}.png`}
+                                alt={''}/>
+                        </Table.Cell>
+                        <Table.Cell colSpan='2'>
+                            <strong>{processData[key][idx].main.temp} &#176; C &nbsp;&&nbsp; {processData[key][idx].weather[0].main}</strong><br/>
+                            Humidity: <strong>{processData[key][idx].main.humidity + "%"}</strong><br/>
+                            Pressure: <strong>{processData[key][idx].main.pressure}</strong> hpa<br/>
+                            Wind
+                            Speed: <strong>{this.convertDegreestoDirections(processData[key][idx].wind.deg) + ' (' + processData[key][idx].wind.deg + ') ' + processData[key][idx].wind.speed}</strong> m/s<br/>
+                        </Table.Cell>
+                    </Table.Row></Table.Body>)
+                }
             }
             this.setState({chartData, feedContents})
         }
@@ -148,6 +164,15 @@ class App extends React.Component {
         this.setState({isLoading: false, results})
     }
 
+    componentWillMount() {
+        const _this = this;
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition((position) => {
+                let browserLocation = {lat: position.coords.latitude, lng: position.coords.longitude};
+                _this.processChartData(browserLocation);
+            });
+        }
+    }
   render() {
     return (
       <div className="weather-div">
@@ -198,11 +223,11 @@ class App extends React.Component {
                                   <LineChart data={this.state.chartData} options={this.state.chartOptions} width="800"
                                              height="275"/><br/>
                               </div>
-                              {/*<div>*/}
-                              {/*<Feed>*/}
-                              {/*{this.state.feedContents}*/}
-                              {/*</Feed>*/}
-                              {/*</div>*/}
+                              <div>
+                                  <Table celled>
+                                      {this.state.feedContents}
+                                  </Table>
+                              </div>
                           </div>
                       ) : null}
                   </Grid.Column>
