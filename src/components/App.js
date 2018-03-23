@@ -8,7 +8,6 @@ import {bindActionCreators} from 'redux'
 import '../css/App.css';
 
 const LineChart = require("react-chartjs").Line;
-//const API_KEY = 'AIzaSyAyesbQMyKVVbBgKVi2g6VX7mop2z96jBo';
 
 class App extends React.Component {
     processChartData = (forecastData) => {
