@@ -186,7 +186,7 @@ class App extends React.Component {
           /><br/>
           {this.props.weatherData.main ? (
               <Grid>
-                  <Grid.Column computer={4} tablet={16} mobile={16}>
+                  <Grid.Column computer={4} tablet={6} mobile={16}>
                       <Card>
                           <Card.Content>
                               <Card.Header>
@@ -215,8 +215,7 @@ class App extends React.Component {
                           </Card.Content>
                       </Card>
                   </Grid.Column>
-                  <Grid.Column computer={12} tablet={16} mobile={16}>
-            
+                  <Grid.Column computer={12} tablet={10} mobile={16}>
                       {(this.state.chartData.datasets) ? (
                           <div>
                               <div>
